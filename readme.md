@@ -4,7 +4,7 @@
 
 *NOT affiliated or associated with Construct Technology PTE. LTD.*
 
-
+# Section I, The Reversing
 
 ## I. Introduction
 Litatom (Also known as Litmatch) is a networking/social Android app built with Java and
@@ -65,8 +65,8 @@ The logging is using [Tencent's Mars Logging Library](https://github.com/Tencent
 encrypted using a public key. The log will be uploaded to Litatom.
 
 ## IV. Encryption
-Request bodies and some of the response bodies (TODO, Not sure the condition yet)
-are encrypted using `LibGaurd`. There are also pure-java encryption method
+Request bodies and some of the response bodies (That has `application/x-litatom-json` as content type)
+are encrypted using `LibGuard`. There are also pure-java encryption method
 included in the APK, it's used to encrypt Chat messages, encrypt basic parameters
 (For SMS Login, Google Login, FaceBook Login, or Get User Info endpoints, and 
 a weird one (check if it's contains `sgposs` in host?)).
@@ -90,8 +90,22 @@ MODE_4_KEY = "AC0A60D491D9876D1012FB24DB61ADC6"
 MODE_5_KEY = "LTMWUGWOBNLJKIOEKGJFOI256KIOWNKF"
 ```
 
-As mentioend above, Libguard mode 3 is a little more secure, it uses random
+As mentioend above, Libguard mode 3 is a little more secure, it uses random with `time()` as seed, 
+and generate 16 bytes of IV parameter. Then it appends the generated IV to the encrypted token, than Base64 it. LibGuard also uses a different Base64 mapping:
+```kt
+fun base64DecodeTransformLibGuard(data: String): String {
+    return data.replace("-", "+")
+        .replace("_", "/")
+        .replace(".", "=")
+}
+fun base64EncodeTransformLibGuard(data: String): String {
+    return data.replace("+", "-")
+        .replace("/", "_")
+        .replace("=", ".")
+}
+```
 
+We suspect it's there because it doesn't need to escape `/` and `+` for url, and also strip it a little so it's harder to figure out what it's about.
 
 ## Conclusion, what we've learned
 We've found a few problems with Litmatch. First, obviously is the request and response
@@ -123,3 +137,6 @@ the market, it's secure enough, but there are definitely room for improvement.
 <br>
 
 <p align="center">(c) fan87, TropicalFan344  All rights reserves</p>
+
+
+# Section II, The Proxy

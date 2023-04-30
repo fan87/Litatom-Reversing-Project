@@ -11,7 +11,8 @@ repositories {
 }
 
 dependencies {
-    testImplementation(kotlin("test"))
+    // https://mvnrepository.com/artifact/commons-io/commons-io
+    implementation("io.appium:mitmproxy-java:2.0.1")
 }
 
 tasks.test {

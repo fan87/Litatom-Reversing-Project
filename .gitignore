@@ -37,3 +37,8 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+run/
+__pycache__
+
+imgui.ini

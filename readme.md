@@ -64,6 +64,8 @@ LitNetwork.b.implementation = function( // Init function
 The logging is using [Tencent's Mars Logging Library](https://github.com/Tencent/mars/tree/master/mars/log) and
 encrypted using a public key. The log will be uploaded to Litatom.
 
+To enable logging (For reversing), you can hook into the library itself using Frida, it will also print out if the SSL Unpinning is successfully or not.
+
 ## IV. Encryption
 Request bodies and some of the response bodies (That has `application/x-litatom-json` as content type)
 are encrypted using `LibGuard`. There are also pure-java encryption method
@@ -71,7 +73,7 @@ included in the APK, it's used to encrypt Chat messages, encrypt basic parameter
 (For SMS Login, Google Login, FaceBook Login, or Get User Info endpoints, and 
 a weird one (check if it's contains `sgposs` in host?)).
 
-The keys could be extracted a class with `com.lit.app.net.interceptors(?).BasicParamsInterceptor` source
+The keys could be extracted from `com.lit.app.net.interceptors(?).BasicParamsInterceptor`
 (Name is deobfuscated with the proguard rules applied and debug annotations kept in
 compiled Kotlin bytecode). This 
 includes the key that's used to encrypt chat messages as it's duplicated, but

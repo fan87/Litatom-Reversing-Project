@@ -28,7 +28,8 @@ It's also recommended to have root on the device, you can easily debug apps
 without any difficulties.
 
 Our setup is Raspberry Pi 4 with [KonstaKANG's LineageOS Build](https://konstakang.com/devices/rpi4/AOSP13/)
-with Gapps and Magisk (Means we have root access). We were originally using 
+with Gapps and Magisk (Means we have root access). We were originally using `Waydroid`, it will work if you are only gonna
+be hooking into Java functions using `Frida` or MITM (Man-in-the-middle) HTTP requests
 
 
 ## II. Requests/Responses

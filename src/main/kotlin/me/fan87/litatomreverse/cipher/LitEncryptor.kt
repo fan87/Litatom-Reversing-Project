@@ -1,6 +1,8 @@
 package me.fan87.litatomreverse.cipher
 
 import java.lang.IllegalArgumentException
+import java.nio.ByteBuffer
+import java.security.SecureRandom
 import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
@@ -15,24 +17,27 @@ const val MODE_5_KEY = "LTMWUGWOBNLJKIOEKGJFOI256KIOWNKF"
 
 object LitEncryptor {
 
-    // Key for /lit/lt/sc endpoint
-    fun encryptChat(data: String): String = encryptBasic(data, CHAT_KEY)
-    fun decryptChat(encrypted: String): String = decryptBasic(encrypted, CHAT_KEY)
-
-    fun encryptBasic(data: String, key: String): String {
+    fun encryptCustomInitialVector(data: String, key: String, initialVector: ByteArray): String {
         val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
-        cipher.init(Cipher.ENCRYPT_MODE, SecretKeySpec(key.encodeToByteArray(), "AES"), IvParameterSpec("abcdef1234567890".encodeToByteArray()))
+        cipher.init(Cipher.ENCRYPT_MODE, SecretKeySpec(key.encodeToByteArray(), "AES"), IvParameterSpec(initialVector))
         return Base64.getEncoder().encodeToString(cipher.doFinal(data.toByteArray()))
     }
-    fun decryptBasic(data: String, key: String): String {
+    fun decryptCustomInitialVector(data: String, key: String, initialVector: ByteArray): String {
         val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
-        cipher.init(Cipher.DECRYPT_MODE, SecretKeySpec(key.encodeToByteArray(), "AES"), IvParameterSpec("abcdef1234567890".encodeToByteArray()))
+        cipher.init(Cipher.DECRYPT_MODE, SecretKeySpec(key.encodeToByteArray(), "AES"), IvParameterSpec(initialVector))
         return cipher.doFinal(
             Base64.getDecoder().decode(data
-            .replace("-", "+")
-            .replace("_", "/")
-            .replace(".", "="))).decodeToString()
+                .replace("-", "+")
+                .replace("_", "/")
+                .replace(".", "="))).decodeToString()
     }
+
+
+    // Key for /lit/lt/sc endpoint
+    fun encryptChat(data: String) = encryptBasic(data, CHAT_KEY)
+    fun decryptChat(encrypted: String) = decryptBasic(encrypted, CHAT_KEY)
+    fun decryptBasic(data: String, key: String) = decryptCustomInitialVector(data, key, "abcdef1234567890".encodeToByteArray())
+    fun encryptBasic(data: String, key: String) = encryptCustomInitialVector(data, key, "abcdef1234567890".encodeToByteArray())
 
 
     // LibGuard Base64 encode and decode.
@@ -61,7 +66,19 @@ object LitEncryptor {
         return when (mode) {
             1 -> base64EncodeTransformLibGuard(encryptBasic(data, MODE_1_KEY))
             2 -> base64EncodeTransformLibGuard(encryptBasic(data, MODE_2_KEY))
-            3 -> base64EncodeTransformLibGuard(encryptBasic(data, MODE_3_KEY))
+            3 -> {
+                val initialVector = ByteArray(0x10)
+                SecureRandom().nextBytes(initialVector)
+                val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
+                cipher.init(Cipher.ENCRYPT_MODE, SecretKeySpec(MODE_3_KEY.encodeToByteArray(), "AES"), IvParameterSpec(initialVector))
+                val encryptedData = cipher.doFinal(data.toByteArray())
+                val out = ByteBuffer.allocate(encryptedData.size + 0x10)
+                out.put(encryptedData)
+                out.put(initialVector)
+                out.flip()
+                return base64EncodeTransformLibGuard(Base64.getEncoder().encodeToString(out.array()))
+
+            }
             4 -> base64EncodeTransformLibGuard(encryptBasic(data, MODE_4_KEY))
             5 -> base64EncodeTransformLibGuard(encryptBasic(data, MODE_5_KEY))
             else -> throw IllegalArgumentException("Unsupported encryption mode: $mode, valid modes are 1, 2, 3, 4, and 5")
@@ -72,7 +89,14 @@ object LitEncryptor {
         return when (mode) {
             1 -> decryptBasic(base64DecodeTransformLibGuard(data), MODE_1_KEY)
             2 -> decryptBasic(base64DecodeTransformLibGuard(data), MODE_2_KEY)
-            3 -> decryptBasic(base64DecodeTransformLibGuard(data), MODE_3_KEY)
+            3 -> {
+                val decodedContent = Base64.getDecoder().decode(base64DecodeTransformLibGuard(data)).toList()
+                val encryptedContent = decodedContent.let { it.subList(0, it.size - 0x10) }.toByteArray()
+                val initialVector = decodedContent.let { it.subList(it.size - 0x10, it.size) }.toByteArray()
+                val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
+                cipher.init(Cipher.DECRYPT_MODE, SecretKeySpec(MODE_3_KEY.encodeToByteArray(), "AES"), IvParameterSpec(initialVector))
+                return cipher.doFinal(encryptedContent).decodeToString()
+            }
             4 -> decryptBasic(base64DecodeTransformLibGuard(data), MODE_4_KEY)
             5 -> decryptBasic(base64DecodeTransformLibGuard(data), MODE_5_KEY)
             else -> throw IllegalArgumentException("Unsupported decryption mode: $mode, valid modes are 1, 2, 3, 4, and 5")
@@ -80,8 +104,4 @@ object LitEncryptor {
     }
 
 
-}
-
-fun main() {
-    println(LitEncryptor.decryptLibGuard("FnLxFU8_ixyUVlTrVokYNrq58dY-d8LEXPi6SL7bPeQ.", 4))
 }

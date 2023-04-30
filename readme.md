@@ -4,7 +4,6 @@
 
 *NOT affiliated or associated with Construct Technology PTE. LTD.*
 
-# Section I, The Reversing
 
 ## I. Introduction
 Litatom (Also known as Litmatch) is a networking/social Android app built with Java and
@@ -138,5 +137,3 @@ the market, it's secure enough, but there are definitely room for improvement.
 
 <p align="center">(c) fan87, TropicalFan344  All rights reserves</p>
 
-
-# Section II, The Proxy

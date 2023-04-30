@@ -29,7 +29,7 @@ without any difficulties.
 
 Our setup is Raspberry Pi 4 with [KonstaKANG's LineageOS Build](https://konstakang.com/devices/rpi4/AOSP13/)
 with Gapps and Magisk (Means we have root access). We were originally using `Waydroid`, it will work if you are only gonna
-be hooking into Java functions using `Frida` or MITM (Man-in-the-middle) HTTP requests
+be hooking into Java functions using `Frida` or MITM (Man-in-the-middle) HTTP requests.
 
 
 ## II. Requests/Responses
@@ -40,7 +40,7 @@ it could be disabled by changing `remote_config` configuration in Google Play Me
 To bypass SSL pinning, you either modify `remote_config` from Google Play Service Measurement (Requires root),
 or use `frida` or other tools to hook into the LitNetwork initialization method
 (Where it initializes the OkHttp client), and modify the remote config before, which is 
-the one we have chosen to use.
+the method we have chosen to use.
 
 The frida script is quiet simple, it does literal what it is.
 

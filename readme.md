@@ -78,6 +78,20 @@ includes the key that's used to encrypt chat messages as it's duplicated, but
 if it's changed it could be extracted from `com.lit.app.im.IMModel` class (Obfuscated)
 
 
+Here's the extracted keys for the current version
+```js
+SGPOSS_KEY = "AC0A60D491D9876D1012FB24DB61ADC6"
+SECURE_ENDPOINTS_KEY = "CB7F786FC0E6E105E6DA03D1FFF05C0F"
+CHAT_KEY = "CB7F786FC0E6E105E6DA03D1FFF05C0F"
+MODE_1_KEY = "CB7F786FC0E6E105E6DA03D1FFF05C0F"
+MODE_2_KEY = "EIOWUGWOERGJKNLDKGJFOI879KJNSDKJ"
+MODE_3_KEY = "f1c9208ccd8ef6d85c44b451da593cd4"
+MODE_4_KEY = "AC0A60D491D9876D1012FB24DB61ADC6"
+MODE_5_KEY = "LTMWUGWOBNLJKIOEKGJFOI256KIOWNKF"
+```
+
+As mentioend above, Libguard mode 3 is a little more secure, it uses random
+
 
 ## Conclusion, what we've learned
 We've found a few problems with Litmatch. First, obviously is the request and response
@@ -88,7 +102,7 @@ simply decrypting them - because we don't have the private key.
 
 It's also using a fixed Initial Vector Parameter for AES in both LibGuard encryption
 mode 1, 2, 4, 5, and pure-java encryption (It's supposed to be random. but in the code
-it's always `abcdef1234567890`).
+it's always `abcdef1234567890`), while mode 3 is the s standard way of AES CBC encryption.
 
 From a Minecraft premium client developer standpoint, the obfuscation is too weak, we
 do know that most Android apps don't need obfuscation, but Proguard isn't even stripping
@@ -102,7 +116,7 @@ Kotlin, which sounds like they want to prevent reversers, but they didn't even
 bother to remove function names from the native library, or even remove source file name
 from compiled Kotlin classes.
 
-I have no mean to say that Construct Tech is bad, because compare to 90% of apps on
+I have no mean to say that Construct Tech is bad, because compare to 90% of the apps on
 the market, it's secure enough, but there are definitely room for improvement.
 
 <br>

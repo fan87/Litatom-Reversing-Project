@@ -8,12 +8,17 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
+const val COMMON_INITIAL_VECTOR = "abcdef1234567890"
+
+const val SGPOSS_KEY = "AC0A60D491D9876D1012FB24DB61ADC6"
+const val SECURE_ENDPOINTS_KEY = "CB7F786FC0E6E105E6DA03D1FFF05C0F"
 const val CHAT_KEY = "CB7F786FC0E6E105E6DA03D1FFF05C0F"
 const val MODE_1_KEY = "CB7F786FC0E6E105E6DA03D1FFF05C0F"
 const val MODE_2_KEY = "EIOWUGWOERGJKNLDKGJFOI879KJNSDKJ"
 const val MODE_3_KEY = "f1c9208ccd8ef6d85c44b451da593cd4"
 const val MODE_4_KEY = "AC0A60D491D9876D1012FB24DB61ADC6"
 const val MODE_5_KEY = "LTMWUGWOBNLJKIOEKGJFOI256KIOWNKF"
+
 
 object LitEncryptor {
 
@@ -36,8 +41,12 @@ object LitEncryptor {
     // Key for /lit/lt/sc endpoint
     fun encryptChat(data: String) = encryptBasic(data, CHAT_KEY)
     fun decryptChat(encrypted: String) = decryptBasic(encrypted, CHAT_KEY)
-    fun decryptBasic(data: String, key: String) = decryptCustomInitialVector(data, key, "abcdef1234567890".encodeToByteArray())
-    fun encryptBasic(data: String, key: String) = encryptCustomInitialVector(data, key, "abcdef1234567890".encodeToByteArray())
+    fun encryptSgposs(data: String) = encryptBasic(data, SGPOSS_KEY)
+    fun decryptSgposs(encrypted: String) = decryptBasic(encrypted, SGPOSS_KEY)
+    fun encryptSecureEndpoints(data: String) = encryptBasic(data, SECURE_ENDPOINTS_KEY)
+    fun decryptSecureEndpoints(encrypted: String) = decryptBasic(encrypted, SECURE_ENDPOINTS_KEY)
+    fun decryptBasic(data: String, key: String) = decryptCustomInitialVector(data, key, COMMON_INITIAL_VECTOR.encodeToByteArray())
+    fun encryptBasic(data: String, key: String) = encryptCustomInitialVector(data, key, COMMON_INITIAL_VECTOR.encodeToByteArray())
 
 
     // LibGuard Base64 encode and decode.

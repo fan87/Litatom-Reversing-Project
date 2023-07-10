@@ -4,6 +4,7 @@
 
 *NOT affiliated or associated with Construct Technology PTE. LTD.*
 
+Please contact me through Discord (fan87) or Email (fan87.TW@gmail.com) if it has to be taken down, and all the possible exploits mentioned has been reported to Construct Technology PTE. LTD.
 
 ## I. Introduction
 Litatom (Also known as Litmatch) is a networking/social Android app built with Java and
